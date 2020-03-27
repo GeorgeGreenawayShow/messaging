@@ -1,0 +1,16 @@
+{
+  "name": "platform.dummy",
+  "version": "1.0.0",
+  "description": "A dummy platform module for GGRM-Messasging",
+  "main": "index.js",
+  "repository": "https://github.com/GeorgeGreenawayShow/messaging",
+  "author": "Cameron Fleming <cameron@nevexo.space>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mqtt": "^3.0.0",
+    "randomstring": "^1.1.5",
+    "requests": "^0.3.0",
+    "winston": "^3.2.1"
+  }
+}
