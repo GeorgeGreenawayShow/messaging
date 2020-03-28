@@ -38,6 +38,8 @@ const app = new mqttMod.interface(
     }
 );
 
+// Dummy specific 
+
 api.post("/message", (req, res) => {
     app.send_message(req.body['message'], req.body['author'], {"meta": "Dummy Platform"})
     console.dir(req.body['message'], req.body['author'], {"meta": "Dummy Platform"})
@@ -47,6 +49,17 @@ api.post("/message", (req, res) => {
 api.patch("/platform", (req, res) => {
     app.set_platform(req.body)
     res.sendStatus(204)
+})
+
+// Platform specific
+
+// msg ack
+api.post("/api/message/:local_id/ack", (req, res) => res.sendStatus(501))
+
+// reply send
+api.post("/api/reply", (req, res) => {
+    res.sendStatus(204)
+    app.reply_dummy(req.body['id'], req.body['msg_id'], req.body['text'])
 })
 
 api.listen(1234, () => {

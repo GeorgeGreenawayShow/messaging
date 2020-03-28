@@ -28,11 +28,23 @@ exports.interface = class {
             "local_id": randomstring.generate(10),
             "text": message,
             "author": author,
-            "platform": this.platform,
+            "platform": this.platform['platform'],
             "timestamp": new Date().toISOString(),
             "meta": meta || null
         }
 
         await this.client.publish("message-add", JSON.stringify(obj))
+    }
+
+    async reply_dummy(id, msg_id, text) {
+        let obj = {
+            "id": id,
+            "msg_id": msg_id,
+            "text": text,
+            "status": "pending"
+        }
+        await this.client.publish("reply-update", JSON.stringify(obj))
+        obj['status'] = "sent"
+        await this.client.publish("reply-update", JSON.stringify(obj))
     }
 }
