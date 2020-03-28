@@ -12,6 +12,10 @@ exports.interface = class {
         this.client.on('connect', async () => {this.mqtt_connet()})
     }
 
+    set_platform(platform) {
+        this.platform = platform
+    }
+
     async mqtt_connet() {
         this.logger.info("Connected to Mosquitto!")
     }

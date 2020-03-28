@@ -2,6 +2,12 @@
 // MIT License
 
 const winston = require('winston');
+const express = require("express");
+const body_parser = require("body-parser");
+
+const api = express();
+
+api.use(body_parser.json());
 
 const logger = winston.createLogger({
     level: process.env.LOG_LEVEL,
@@ -32,4 +38,17 @@ const app = new mqttMod.interface(
     }
 );
 
-app.send_message("Test Message", "Nevexo", {"meta": "test"})
+api.post("/message", (req, res) => {
+    app.send_message(req.body['message'], req.body['author'], {"meta": "Dummy Platform"})
+    console.dir(req.body['message'], req.body['author'], {"meta": "Dummy Platform"})
+    res.sendStatus(201)
+})
+
+api.patch("/platform", (req, res) => {
+    app.set_platform(req.body)
+    res.sendStatus(204)
+})
+
+api.listen(1234, () => {
+    console.log("👍 Listening on 1234")
+})
