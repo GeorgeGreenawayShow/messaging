@@ -60,8 +60,9 @@ exports.Database = class {
                     "message": message,
                     "author": authorID,
                     "platform": platform,
+                    "replies": [],
+                    "time": new Date(),
                     "meta": meta || null
-
                 }
 
                 this.logger.info(`💬 Adding new message, from ${authorID}, message: ${message}.`)
@@ -95,7 +96,10 @@ exports.Database = class {
                         foreignField: "id",
                         as: "author"
                     }},
-                    {$unwind: '$author'}
+                    {$unwind: '$author'},
+                    {
+                        $sort: { time: -1 }
+                    }
                 ])
                 .limit(parseInt(count) || 200)
                 .toArray().then(data => {

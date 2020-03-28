@@ -69,7 +69,7 @@ Respond:
 > 201 - No content
 > 501 - Not implemented
 
-### POST send (/api/reply/send)
+### POST send (/api/reply)
 
 This endpoint is called by REST or Ledger to reply to a message. The module is free to handle this however it wishes.
 The REST API must be answered ASAP, and a reply ack should be sent via 'reply-sent'
@@ -87,18 +87,3 @@ Respond:
 
 > 201 - No content
 > 501 - Not implemented 
-
-### GET platform (/api/platform)
-
-Returns the standard platform data
-
-Respond:
-200 OK
-
-{
-    "name": "Common name (sms)",
-    "friendly_name": "SMS (displayed in UI)",
-    "priority": false (such as donations),
-    "limited": true (such as SMS, costs.),
-    "reply_available": true
-}

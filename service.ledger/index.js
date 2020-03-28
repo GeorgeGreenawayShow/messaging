@@ -99,10 +99,27 @@ const mqtt_client = mqtt.connect("mqtt://mosquitto")
 mqtt_client.on('connect', () => {
     logger.verbose("🎉 Connected to MQTT.")
     mqtt_client.subscribe("message-add")
+    mqtt_client.subscribe("reply-update")
 })
 
-mqtt_client.on('message', (topic, message) => {
+mqtt_client.on('message', async (topic, message) => {
     logger.verbose(`📣 MQTT: ${topic} - ${message}`)
+    message = JSON.parse(message)
+    if (topic == "message-add") {
+        try {
+            // New message, first check if the author exists.
+            let author = await data.find_author({"name": message['author']})
+            // If no author, create a new one.
+            author.length == 0 ? author = await data.new_author(message['author']) : author = author[0]
+            author = author['id']
+
+            await data.new_message(message['text'], author, message['platform'], message['meta'])
+
+        } catch (e) {
+            logger.error(e)
+        }
+        
+    }
 })
 
 async function create_author() {
