@@ -24,7 +24,6 @@ Every author stored in a separate table.
 {
     "id": "A ledger-defined author ID",
     "name": "Name/number from the platform",
-    "platform": {},
     "nick": "A nickname only used in dashboards"
 }
 

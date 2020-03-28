@@ -55,3 +55,13 @@ services:
             - "3000:3000"
         networks:
             - app-net
+
+    # -- Platforms --
+
+    dummy:
+        container_name: testing.dummy
+        build: ./platform.dummy
+        ports:
+            - "1234:1234"
+        networks:
+            - app-net
