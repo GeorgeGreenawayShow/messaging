@@ -1,5 +1,10 @@
 version: '3.1'
 
+###### NOTICE ######
+# Most services have their ports exposed.
+# This is for testing only and should be removed
+# before final release.
+
 networks:
     app-net:
         driver: bridge
@@ -17,6 +22,14 @@ services:
         networks:
             - app-net
         
+    config:
+        container_name: service.configuration
+        build: ./service.config
+        ports:
+            - "3000:3000"
+        networks:
+            - app-net
+
     # nginx:
     #     container_name: service.gateway
     #     image: nginx

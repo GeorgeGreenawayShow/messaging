@@ -1,0 +1,13 @@
+{
+  "name": "service.config",
+  "version": "1.0.0",
+  "description": "The configuration service for ggrms",
+  "main": "index.js",
+  "repository": "https://github.com/georgegreenawayshow/messaging",
+  "author": "Cameron Fleming <cameron@nevexo.space>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "yaml": "^1.8.3"
+  }
+}
