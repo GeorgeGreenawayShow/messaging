@@ -1,2 +1,2 @@
 # messaging
-💬 The George Greenaway Radio Maraton messaging platform
+💬 The George Greenaway Radio Marathon messaging platform
