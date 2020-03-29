@@ -51,7 +51,8 @@ services:
     config:
         container_name: service.configuration
         build: ./service.config
-        env_file: dev.env
+        env_file:
+            - dev.env
         ports:
             - "3000:3000"
         networks:
@@ -60,7 +61,8 @@ services:
     auth:
         container_name: service.auth
         build: ./service.auth
-        env_file: dev.env
+        env_file: 
+            - dev.env
         ports:
             - "9999:9999"
         networks:
@@ -69,7 +71,8 @@ services:
     ledger:
         container_name: service.ledger
         build: ./service.ledger
-        env_file: dev.env
+        env_file: 
+            - dev.env
         ports:
             - "8080:8080"
         networks:
@@ -80,7 +83,8 @@ services:
     dummy:
         container_name: testing.dummy
         build: ./platform.dummy
-        env_file: dev.env
+        env_file:
+            - dev.env
         ports:
             - "1234:1234"
         networks:
