@@ -105,5 +105,20 @@ class Commands:
             else:
                 print("😢 Failed to get data (auth?)")
 
+    def reply(self, id, message):
+        """Reply to a message"""
+        token = read_token_file()
+        if token:
+            r = requests.post(f"{config.ledger_server}/api/message/{id}/reply", json={
+                "message": message
+            },
+            headers={"Authorization": token})
+
+            if r.status_code == 204:
+                print("👍 Reply sent (pending)")
+            else:
+                print("😢 Failed to send reply.")
+
+
 if __name__ == "__main__":
     fire.Fire(Commands)
