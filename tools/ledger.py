@@ -16,7 +16,12 @@ def print_message(message):
     print(f"ℹ ID: {message['id']}")
     print(f"🧑 Author: {message['author']['name']} (a.k.a {message['author']['nick']}) (ID: {message['author']['id']})")
     print(f"💬 {message['message']}")
-    print(f"📱 Platform: {message['platform']['friendly_name']}")
+    print(f"📱 Platform: {message['platform']['friendly_name']} (Replies supported: {message['platform']['reply_available']})")
+    if len(message['replies']) != 0:
+        print("↩ Replies:")
+        for reply in message['replies']:
+            print(f"  ▶ 💬 Message: {reply['message']}")
+            print(f"  ▶ 🧑 Reply by: {reply['staff_author']}\n")
 
 def print_author(author):
     print("-------------------")
