@@ -31,7 +31,7 @@ services:
             - 27017:27017
         volumes:
             - mongo:/data/db
-            - ./service.ledger/mongo:/docker-entrypoint-initdb.d
+            - ./mongo-schemas:/docker-entrypoint-initdb.d
         environment: 
             - MONGO_INITDB_DATABASE=ggrm
         networks:
