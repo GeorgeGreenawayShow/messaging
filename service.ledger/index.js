@@ -29,6 +29,32 @@ const data = new mongo.Database(logger);
 const app = express()
 app.use(cors())
 app.use(body_parser.json())
+app.use(async (req, res, next) => {
+    // Handle authentication
+    if (req.headers.authorization == undefined) {
+        res.sendStatus(401)
+        return;
+    }
+
+    axios.get("http://auth:9999/api/auth", {headers: {"authorization": req.headers.authorization}})
+    .then(response => {
+        if (response.status == 200) {
+            // Authenticated
+            req.user_object = response.data
+            next()
+        }else {
+            res.sendStatus(401)
+        }
+    })
+    .catch((error) => {
+        if (error.response != undefined) {
+            error.response.status == 401 ? res.sendStatus(401) : res.sendStatus(501)
+            return;             
+        }
+        logger.error("Authentication server issue!")
+        logger.error(error.toString())
+    })
+})
 
 // -- Routes / GET / messages --
 
