@@ -102,4 +102,10 @@ exports.Tokens = class {
         })
     }
 
+    clear_cache() {
+        // Clear the cache
+        // Usually used when a user is deleted.
+        this.token_cache = {}
+    }
+
 }
