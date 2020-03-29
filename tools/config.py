@@ -1,4 +1,4 @@
 
-ledger_server = "http://localhost:8080"
+ledger_server = "http://localhost/ledger"
 dummy_server = "http://localhost:1234"
-auth_server = "http://localhost:9999"
+auth_server = "http://localhost/auth"
