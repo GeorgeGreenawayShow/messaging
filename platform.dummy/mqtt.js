@@ -36,11 +36,12 @@ exports.interface = class {
         await this.client.publish("message-add", JSON.stringify(obj))
     }
 
-    async reply_dummy(id, msg_id, text) {
+    async reply_dummy(id, msg_id, text, staff_author) {
         let obj = {
             "id": id,
             "msg_id": msg_id,
             "text": text,
+            "staff_author": staff_author,
             "status": "pending"
         }
         await this.client.publish("reply-update", JSON.stringify(obj))

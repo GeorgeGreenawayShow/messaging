@@ -59,7 +59,7 @@ api.post("/api/message/:local_id/ack", (req, res) => res.sendStatus(501))
 // reply send
 api.post("/api/reply", (req, res) => {
     res.sendStatus(204)
-    app.reply_dummy(req.body['id'], req.body['msg_id'], req.body['text'])
+    app.reply_dummy(req.body['id'], req.body['msg_id'], req.body['text'], req.body['staff_author'])
 })
 
 api.listen(1234, () => {

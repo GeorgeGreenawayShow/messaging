@@ -4,6 +4,8 @@
 const winston = require('winston');
 const mongo = require("./src/mongo");
 const express = require("express");
+const axios = require("axios");
+const randomstring = require("randomstring");
 const cors = require("cors");
 const body_parser = require("body-parser");
 const mqtt = require("mqtt");
@@ -92,6 +94,47 @@ app.patch("/api/author/:id", async (req, res) => {
     }
 })
 
+// -- Routes / POST / Reply --
+
+app.post("/api/message/:id/reply", async (req, res) => {
+    // Reply to a message.
+    let message = await data.get_messages(1, {"id": req.params.id})
+    if (message.length == 0) {
+        res.sendStatus(404);
+        return;
+    }else {
+        message = message[0]
+    }
+
+    if (req.body.message == undefined) {
+        res.sendStatus(400);
+        return;
+    }
+
+    const reply_id = randomstring.generate(10)
+
+    logger.info(`💬 Replying to message ${req.params.id} - Reply ID: ${reply_id} - Orignal message ID: ${message.id}`)
+    // Send a reply payload to platform service
+
+    // TODO: Add staff_author from auth service.
+    let json_payload = {
+        "id": reply_id,
+        "msg_id": message.id,
+        "author": message.author,
+        "text": req.body.message,
+        "staff_author": "NYI"
+    }
+
+    axios.post(`http://${message.platform.name}:${process.env.PLATFORM_API_PORT}/api/reply`, json_payload)
+    .then((response) => {
+        response.status == 204 ? res.sendStatus(204) : res.sendStatus(501)
+    })
+    .catch(error => {
+        logger.error(error.toString());
+        res.sendStatus(500)
+    })
+})
+
 // -- MQTT Handlers --
 
 const mqtt_client = mqtt.connect("mqtt://mosquitto")
@@ -105,6 +148,7 @@ mqtt_client.on('connect', () => {
 mqtt_client.on('message', async (topic, message) => {
     logger.verbose(`📣 MQTT: ${topic} - ${message}`)
     message = JSON.parse(message)
+    // New message handler
     if (topic == "message-add") {
         try {
             // New message, first check if the author exists.
@@ -120,11 +164,18 @@ mqtt_client.on('message', async (topic, message) => {
         }
         
     }
-})
 
-async function create_author() {
-    await data.new_author("Nevexo", "Cameron")
-}
+    // Reply update handler
+    if (topic == "reply-update") {
+        if (message['status'] == "sent") {
+            try {
+                await data.add_reply(message['msg_id'], message['id'], message['text'], message['staff_author'] || "No Author")
+            } catch (e) {
+                logger.error(e)
+            }
+        }
+    }
+})
 
 app.listen(8080, () => {
     logger.verbose("🎉 API server started.")

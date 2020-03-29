@@ -200,4 +200,31 @@ exports.Database = class {
             }
         })
     }
+
+    // REPLIES
+
+    async add_reply(message_id, reply_id, reply_text, staff_author) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const client = await this.connect()
+                const tMessages = client.db("ggrm").collection("messages")
+
+                const obj = {
+                    "id": reply_id,
+                    "message": reply_text,
+                    "time": new Date(),
+                    "staff_author": staff_author
+                }
+
+                tMessages.updateOne({"id": message_id || 0}, {$addToSet: {replies: obj}}).then((result => {
+                    this.logger.info(`💬 Updating ${message_id} - added reply.`)
+                    client.close();
+                    resolve(result['result']['n'])
+                }))
+            } catch (e) {
+                this.logger.error(e)
+                reject(e)
+            }
+        })
+    }
 }

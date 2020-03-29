@@ -47,8 +47,11 @@ This topic is raised every time the status of a reply job changes, such as pendi
     "id": "Reply ID",
     "msg_id": "message id",
     "text": "reply text",
+    "staff_author": "",
     "status": "pending/sent/failed"
 }
+
+Staff_author is sent byu the caller and should be preserved by the platform (shows the staff author in the table.)
 
 ## HTTP
 
@@ -80,6 +83,7 @@ Expect JSON:
     "id": "reply ID",
     "msg_id": "message id",
     "author": "Author screen name/phone number",
+    "staff_author": "Author of the reply.",
     "meta": {} // the meta the original message contained
 }
 
