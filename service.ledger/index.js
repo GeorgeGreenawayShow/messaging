@@ -148,7 +148,7 @@ app.post("/api/message/:id/reply", async (req, res) => {
         "msg_id": message.id,
         "author": message.author,
         "text": req.body.message,
-        "staff_author": "NYI"
+        "staff_author": req.user_object['username']
     }
 
     axios.post(`http://${message.platform.name}:${process.env.PLATFORM_API_PORT}/api/reply`, json_payload)
