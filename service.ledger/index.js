@@ -137,6 +137,14 @@ app.post("/api/message/:id/reply", async (req, res) => {
         return;
     }
 
+    if (!message.platform.reply_available) {
+        res.status(400)
+        res.json({
+            "error": "Platform doesn't support replies."
+        })
+        return;
+    }
+
     const reply_id = randomstring.generate(10)
 
     logger.info(`💬 Replying to message ${req.params.id} - Reply ID: ${reply_id} - Orignal message ID: ${message.id}`)

@@ -117,8 +117,10 @@ class Commands:
 
             if r.status_code == 204:
                 print("👍 Reply sent (pending)")
+            elif r.status_code == 400:
+                print("❗ Platform doesn't support replies.")
             else:
-                print("😢 Failed to send reply.")
+                print(f"😢 Failed to send reply. ({r.status_code})")
 
 
 if __name__ == "__main__":
