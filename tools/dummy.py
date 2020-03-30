@@ -16,7 +16,7 @@ class Commands:
         friendly = input("ℹ Friendly name: ")
         priority = string_to_bool(input("👆 Priority platform [True/False]: "))
         limited = string_to_bool(input("💰 Limited platform [True/False]: "))
-        reply = bool(input("💬 Reply Supported [True/False]: "))
+        reply = string_to_bool(input("💬 Reply Supported [True/False]: "))
 
         platform = { "platform": {
             "name": name,
