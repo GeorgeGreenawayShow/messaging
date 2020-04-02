@@ -25,7 +25,7 @@ def print_user(user):
         print(f"⌚ Session expires at: {user['session_expires']}")
     if user['avatar']:
         print(f"🖼 Avatar: {user['avatar']}")
-    if "reset_required":
+    if "reset_required" in user:
         print("❗ User must change password at next login.")
     print("\n")
 
