@@ -7,7 +7,10 @@ import os
 def read_token_file():
     if os.path.exists("token.txt"):
         with open("token.txt", "r+") as f:
-            return f.read()
+            token = f.read()
+            if "RST-" in token:
+                print("🔑❗ Logged in with a password reset token, most commands won't work. Login as another user or set a new password.")
+            return token
     else:
         print("😢 No token file found, please login with [login]")
         return False
@@ -30,8 +33,10 @@ def print_user(user):
     print("\n")
 
 class Commands:
-    def login(self, username="setup", password="password"):
+    def login(self, username="setup"):
         """Login to Auth server (uses setup account by default)"""
+        print(f"🔑 Logging in as {username}")
+        password = input("🔑 Password (default: password): ")
         r = requests.post(f"{config.auth_server}/api/auth/login", json={
             "username": username,
             "password": password
@@ -39,8 +44,11 @@ class Commands:
 
         if r.status_code == 200:
             print("🎉 Successfully logged in! Writing token to file.")
+            token = r.json()['token']
+            if "RST-" in token:
+                print("❗ Logged in with a password reset token, most commands won't work. Use auth password to set a new password.")
             with open("token.txt", "w+") as f:
-                f.write(r.json()['token'])
+                f.write(token)
         elif r.status_code == 401:
             print(f"❌ Unauthorised: {r.json()}")
         else:
@@ -86,14 +94,21 @@ class Commands:
                 for user in users:
                     print_user(user)
 
-    def create(self, user, password, avatar=""):
+    def create(self, user, avatar=""):
         """Create a new user"""
         token = read_token_file()
         if token:
-            obj = {"username": user, "password": password, "avatar": avatar}
+            password = input("🔑 Password for user (blank for auto): ")
+            if password != "":
+                obj = {"username": user, "password": password, "avatar": avatar}
+            else:
+                obj = {"username": user, "avatar": avatar}
+
             r = requests.put(f"{config.auth_server}/api/user", json=obj, headers={"authorization": token})
             if r.status_code == 204:
                 print(f"✅ Created new user: {user}")
+            elif r.status_code == 200:
+                print(f"✅ Created new user: {user}, temporary password: {r.json()['password']}")
             elif r.status_code == 409:
                 print(f"😒 User already exits")
             else:
@@ -110,6 +125,26 @@ class Commands:
                 print("❌ Invalid user.")
             else:
                 print("Auth issue.")
+
+    def password(self, username):
+        """Set a new password"""
+        token = read_token_file()
+        if token:
+            password = input("🔑 New password (blank for auto): ")
+            if password == "":
+                obj = {"user": username}
+            else:
+                obj = {"user": username, "password": password}
+            r = requests.post(f"{config.auth_server}/api/user/reset", json=obj, headers={"authorization": token})
+            if r.status_code == 204:
+                print("🎉 Password updated.")
+            elif r.status_code == 200:
+                print(f"🎉 Password updated. (🔑 temporary password: {r.json()['password']})")
+            elif r.status_code == 401:
+                print(f"❗ Invalid username/password or you're trying to change a password of another user while using a password-reset token.")
+            else:
+                print(f"😢 Unknown communication error: {r.status_code} {r.text}")
+
 
 if __name__ == "__main__":
     fire.Fire(Commands)
