@@ -36,8 +36,8 @@ app.use(async (req, res, next) => {
     // Auth handler
     logger.verbose(`Auth API Act ${req.originalUrl}`)
     
-    if (req.originalUrl == "/api/auth/login") {
-        // Skip auth check for login URL.
+    if (req.originalUrl == "/api/auth/login" || req.originalUrl == "/status") {
+        // Skip auth check for login URL and status.
         next();
         return;
     }
@@ -112,6 +112,10 @@ app.post("/api/auth/login", async (req, res) => {
             res.json({"token": token})
         }
     }
+})
+
+app.get("/status", (req, res) => {
+    res.json({"state": "available"})
 })
 
 app.listen(9999, () => {

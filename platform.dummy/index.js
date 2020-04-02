@@ -62,6 +62,11 @@ api.post("/api/reply", (req, res) => {
     app.reply_dummy(req.body['id'], req.body['msg_id'], req.body['text'], req.body['staff_author'])
 })
 
+// Status check
+api.get("/status", (req, res) => {
+    res.json({"state": "available"})
+}) 
+
 api.listen(1234, () => {
     console.log("👍 Listening on 1234")
 })

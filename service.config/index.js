@@ -19,6 +19,10 @@ fs.readFile("./config.yaml", (error, data) => {
     }
 })
 
+app.get("/status", (req, res) => {
+    res.json({"state": "available"})
+})
+
 app.get("/:service", (req, res) => {
     const obj = {
         "global": config['global'] || {},

@@ -31,6 +31,13 @@ app.use(cors())
 app.use(body_parser.json())
 app.use(async (req, res, next) => {
     // Handle authentication
+    
+    if (req.originalUrl == "/status") {
+        // Skip auth for service status
+        next();
+        return;
+    }
+
     if (req.headers.authorization == undefined) {
         res.sendStatus(401)
         return;
@@ -54,6 +61,10 @@ app.use(async (req, res, next) => {
         logger.error("Authentication server issue!")
         logger.error(error.toString())
     })
+})
+
+app.get("/status", (req, res) => {
+    res.json({"state": "available"})
 })
 
 // -- Routes / GET / messages --
