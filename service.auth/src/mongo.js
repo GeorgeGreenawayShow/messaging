@@ -46,7 +46,7 @@ exports.Database = class {
         })
     }
 
-    async new_user(username, password, avatar) {
+    async new_user(username, password, avatar, doNotRequireReset) {
         // Create a new user
         return new Promise(async (resolve, reject) => {
             try {
@@ -60,12 +60,36 @@ exports.Database = class {
                     "password": hashed_password,
                     "token": null,
                     "token_expires": null,
-                    "avatar": avatar || "https://avatars1.githubusercontent.com/u/4786918?s=460&u=16b6b6544289ee24031f25835e1c9b2173a250f6&v=4"
+                    "avatar": avatar || "https://avatars1.githubusercontent.com/u/4786918?s=460&u=16b6b6544289ee24031f25835e1c9b2173a250f6&v=4",
+                    "reset_required": doNotRequireReset ? false : true
                 }
 
                 this.logger.info(`🙋 Creating new User: ${username}`)
                 tUsers.insertOne(UserObject).then(() => {
                     resolve()
+                    client.close();
+                })
+            } catch (e) {
+                this.logger.error(e)
+                reject(e)
+            }
+        })
+    }
+
+    async update_user(username, password, force_reset) {
+        // Set a user's password & 
+        return new Promise(async (resolve, reject) => {
+            try {
+                const client = await this.connect()
+                const tUsers = client.db("ggrm").collection("users")
+               
+                const hashed_password = await bcrypt.hash(password, 10)
+
+                tUsers.updateOne(
+                    {"username": username},
+                    {$set: {"password": hashed_password, "token": null, "token_expires": null, "reset_required": force_reset || false}}
+                ).then((result) => {
+                    resolve(result['result']['n'])
                     client.close();
                 })
             } catch (e) {

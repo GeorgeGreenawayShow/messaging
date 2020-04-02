@@ -10,11 +10,16 @@ exports.Tokens = class {
         this.token_cache = {};
     }
 
-    gen_token() {
-        let token = `ggrm-t-${randomstring.generate(30)}-x`
-        // Create time in the future
+    gen_token(temp) {
+        let token;
         let expire_stamp = new Date();
-        expire_stamp.setDate(expire_stamp.getDate() + 5);
+        if (!temp) {
+            token = `ggrm-t-${randomstring.generate(30)}-x`
+            expire_stamp.setDate(expire_stamp.getDate() + 5); // Expire after 5 days
+        }else {
+            token = `RST-t-${randomstring.generate(30)}-x`
+            expire_stamp.setTime(expire_stamp.getTime() + 10*60000); // Expire after 10 minutes
+        }
 
         return [token, expire_stamp]
     }
@@ -52,7 +57,8 @@ exports.Tokens = class {
                     let return_object = {
                         "username": user[0].username,
                         "token_expires": user[0].token_expires,
-                        "avatar": user[0].avatar
+                        "avatar": user[0].avatar,
+                        "temp_token": user[0].token.startsWith("RST-") ? true : false
                     }
 
                     // Add token to cache
@@ -92,7 +98,8 @@ exports.Tokens = class {
             const pw_result = await bcrypt.compare(password, user.password)
             if (pw_result) {
                 // Generate token and authenticate user.
-                let token = this.gen_token();
+                // Check if a password reset is required
+                let token = user['reset_required'] ? this.gen_token(true) : this.gen_token(false)
                 await this.database.update_token(username, token[0], token[1]);
                 resolve(token[0]);
             }else {

@@ -7,6 +7,7 @@ const body_parser = require("body-parser")
 const axios = require("axios");
 const Database = require("./src/mongo")
 const Tokens = require("./src/tokens")
+const randomstring = require("randomstring")
 const winston = require("winston")
 
 // Setup Winston logger
@@ -54,24 +55,45 @@ app.use(async (req, res, next) => {
         res.sendStatus(401)
         logger.verbose("! Invalid auth token with request.")
         return;
-    }else {
-        req.user_object = user
-        next();
     }
+    // Check for reset-password token
+    if (user.temp_token) {
+        // The user is using a reset token, only allow access to password reset.
+        if (req.originalUrl == "/api/user/reset") {
+            req.auth_type = "reset"
+            req.user_object = user
+            next();
+            return;
+        }else {
+            res.status(401)
+            res.json({"message": "You're logged in with a password reset token, you may only change your password."})
+            return;
+        }
+    }
+
+    req.auth_type == "normal"
+    req.user_object = user
+    next();
 })
 
 app.put("/api/user", async (req, res) => {
-    if (req.body.username == undefined || req.body.password == undefined) {
+    if (req.body.username == undefined) {
         res.sendStatus(400);
         return;
     }
+    let password = req.body.password || randomstring.generate(5)
     try {
         // Check if the user exists
         let users = await database.get_user({"username": req.body.username})
         if (users.length == 0) {
             // Create a new user
-            await database.new_user(req.body.username, req.body.password, req.body.avatar || null)
-            res.sendStatus(204) // NO CONTENT
+            await database.new_user(req.body.username, password, req.body.avatar || null, req.body.password == undefined ? false : true)
+
+            if (req.body.password) {
+                res.sendStatus(204) // NO CONTENT
+            }else {
+                res.json({"password": password})
+            }
         }else {
             // User already exists (conflict)
             res.sendStatus(409) // CONFLICT
@@ -79,6 +101,31 @@ app.put("/api/user", async (req, res) => {
     }catch (e) {
         logger.error(e)
         res.sendStatus(500) // Server error.
+    }
+})
+
+app.post("/api/user/reset", async (req, res) => {
+    // Set user password, requires normal/reset token
+    if (req.auth_type == "reset" && req.body.user != req.user_object['username']) {
+        res.status(401)
+        res.json({"message": "You're logged in with a RESET-PASSWORD token, you may not update somebody elses password."})
+        return;
+    }
+
+    // Set the password
+    let new_pass = req.body.password || randomstring.generate(5)
+    // Update the user, force password reset if no password was sent. (temp password mode)
+    let result = await database.update_user(req.body.user, new_pass, req.body.password == undefined ? true : false)
+    tokens.clear_cache();
+    
+    if (result == 1) {
+        if (req.body.password) {
+            res.sendStatus(204)
+        }else {
+            res.json({"password": new_pass})
+        }
+    }else {
+        res.sendStatus(404)
     }
 })
 
