@@ -106,7 +106,8 @@ app.post("/api/auth/login", async (req, res) => {
     }else {
         let token = await tokens.user_login(req.body.username, req.body.password)
         if (token == false) {
-            res.sendStatus(401)
+            res.status(401)
+            res.json({"message": "Invalid username/password combination."})
         }else {
             res.json({"token": token})
         }
