@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import fire
 import requests
 import config

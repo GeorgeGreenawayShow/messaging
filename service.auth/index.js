@@ -84,6 +84,7 @@ app.put("/api/user", async (req, res) => {
 
 app.delete("/api/user/:username", async (req, res) => {
     let result = await database.delete_user(req.params.username)
+    tokens.clear_cache()
     result == 0 ? res.sendStatus(404) : res.sendStatus(204)
 })
 
