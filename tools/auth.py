@@ -18,6 +18,17 @@ def user_readout(user):
     if user['username'] == "setup":
         print("‼ Caution, you're logged in as the setup account, it's highly recommended you make another account and delete this one.")
 
+def print_user(user):
+    print(f"🧑 Username: {user['username']}")
+    print(f"🏠 Logged in: {user['logged_in']}")
+    if "session_expires" in user:
+        print(f"⌚ Session expires at: {user['session_expires']}")
+    if user['avatar']:
+        print(f"🖼 Avatar: {user['avatar']}")
+    if "reset_required":
+        print("❗ User must change password at next login.")
+    print("\n")
+
 class Commands:
     def login(self, username="setup", password="password"):
         """Login to Auth server (uses setup account by default)"""
@@ -64,6 +75,16 @@ class Commands:
                 print(f"👋 Logged out {user}")
             else:
                 print("‼ Failed to logout.")
+
+    def users(self):
+        """Get a list of all users"""
+        token = read_token_file()
+        if token:
+            r = requests.get(f"{config.auth_server}/api/users", headers={"authorization": token})
+            if r.status_code == 200:
+                users = r.json()
+                for user in users:
+                    print_user(user)
 
     def create(self, user, password, avatar=""):
         """Create a new user"""

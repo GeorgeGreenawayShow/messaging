@@ -128,6 +128,23 @@ app.post("/api/auth/login", async (req, res) => {
     }
 })
 
+app.get("/api/users", async (req, res) => {
+    let o_users = []
+    let users = await database.get_user({})
+    
+    for await (user of users) {
+        o_users.push({
+            "username": user['username'],
+            "logged_in": user.token ? true : false,
+            "session_expires": user.token_expires || undefined,
+            "avatar": user['avatar'],
+            "reset_required": user.reset_required ? true : undefined
+        })
+    }
+
+    res.json(o_users)
+})
+
 app.get("/status", (req, res) => {
     res.json({"state": "available"})
 })
