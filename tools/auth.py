@@ -30,7 +30,9 @@ class Commands:
             with open("token.txt", "w+") as f:
                 f.write(r.json()['token'])
         else:
-            print("❌ Invalid login data.")
+            print(f"😢 Communication error: {r.status_code}")
+        elif r.status_code == 401:
+            print("❌ Invalid Credentials.")
 
     def check(self):
         """Checks if the token file is valid"""
