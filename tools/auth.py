@@ -47,16 +47,23 @@ class Commands:
             else:
                 print("😭 Invalid token, login again with [login]")
 
-    def logout(self):
-        """Logout current user"""
+    def logout(self, user="self"):
+        """Logout user, 'self' to logout own account"""
         token = read_token_file()
-        if token:
+        if token and user == "self":
             r = requests.delete(f"{config.auth_server}/api/auth", headers={"authorization": token})
             os.remove("token.txt")
             if r.status_code == 204:
                 print("👋 Logged out, bye!")
             else:
                 print("‼ Un-graceful logout, deleting file.")
+
+        else:
+            r = requests.delete(f"{config.auth_server}/api/user/{user}/session", headers={"authorization": token})
+            if r.status_code == 204:
+                print(f"👋 Logged out {user}")
+            else:
+                print("‼ Failed to logout.")
 
     def create(self, user, password, avatar=""):
         """Create a new user"""

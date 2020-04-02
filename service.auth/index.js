@@ -99,6 +99,20 @@ app.delete("/api/auth", async (req, res) => {
     res.sendStatus(204);
 })
 
+app.delete("/api/user/:username/session", async (req, res) => {
+    // Logout another user
+    let user = await database.get_user({"username": req.params.username})
+    if (user.length == 0) {
+        res.sendStatus(404)
+        return;
+    }
+    user = user[0]
+
+    // Deauthenticate user
+    await tokens.user_logout(user['username'], user['token'])
+    res.sendStatus(204)
+})
+
 app.post("/api/auth/login", async (req, res) => {
     // Login a user
     if (req.body.username == undefined || req.body.password == undefined) {
