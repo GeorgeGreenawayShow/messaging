@@ -1,0 +1,15 @@
+{
+  "name": "platform.twitter",
+  "version": "1.0.0",
+  "description": "The twitter intergration service for GGRM",
+  "main": "index.js",
+  "author": "Cameron Fleming <cameron@nevexo.space>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "axios": "^0.19.2",
+    "express": "^4.17.1",
+    "mqtt": "^3.0.0",
+    "twitter": "^1.7.1"
+  }
+}
