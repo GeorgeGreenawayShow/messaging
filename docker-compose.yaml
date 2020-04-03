@@ -54,7 +54,7 @@ services:
         container_name: service.configuration
         build: ./service.config
         volumes:
-            - ./service.config/config.yaml:/service/config.yaml
+            - ./config.yaml:/service/config.yaml
         env_file:
             - dev.env
         ports:

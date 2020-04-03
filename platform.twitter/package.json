@@ -10,6 +10,7 @@
     "axios": "^0.19.2",
     "express": "^4.17.1",
     "mqtt": "^3.0.0",
+    "randomstring": "^1.1.5",
     "twitter": "^1.7.1"
   }
 }
