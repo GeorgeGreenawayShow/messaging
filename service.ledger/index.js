@@ -161,7 +161,6 @@ app.post("/api/message/:id/reply", async (req, res) => {
     logger.info(`💬 Replying to message ${req.params.id} - Reply ID: ${reply_id} - Orignal message ID: ${message.id}`)
     // Send a reply payload to platform service
 
-    // TODO: Add staff_author from auth service.
     let json_payload = {
         "id": reply_id,
         "msg_id": message.id,
@@ -199,7 +198,7 @@ mqtt_client.on('message', async (topic, message) => {
             // New message, first check if the author exists.
             let author = await data.find_author({"name": message['author']})
             // If no author, create a new one.
-            author.length == 0 ? author = await data.new_author(message['author']) : author = author[0]
+            author.length == 0 ? author = await data.new_author(message['author'], message['nick'] || undefined) : author = author[0]
             author = author['id']
 
             await data.new_message(message['text'], author, message['platform'], message['meta'])
