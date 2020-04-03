@@ -24,6 +24,7 @@ async function get_config() {
 }
 
 async function setup() {
+    const config = await get_config()
     const mqtt = new MQTT.interface({
         "platform": {
             "name": "twitter",
@@ -31,10 +32,9 @@ async function setup() {
             "fa_icon": "fab fa-twitter",
             "priority": false,
             "limited": false,
-            "reply_available": true
+            "reply_available": config.service.enable_replies == "yes" ? true : false
         }
     });
-    const config = await get_config()
     const client = new twitter({
         consumer_key: config.service.consumer_key,
         consumer_secret: config.service.consumer_secret,
@@ -44,13 +44,14 @@ async function setup() {
 
     console.log("Config loaded, initalising stream.")
 
-    const stream = client.stream('statuses/filter', {track: 'ggstest'});
+    const stream = client.stream('statuses/filter', {track: config.service.track});
     stream.on('data', async (tweet_object) => {
+        console.log(`Adding ${tweet_object['text']} by @${tweet_object['user']['screen_name']}`)
         await mqtt.send_message(
             tweet_object['text'], // Tweet body
             
             {"author": tweet_object['user']['screen_name'], // Author/nick
-            "nick": tweet_object['user']['name']},
+            "nick": config.service.use_name_as_nick ? tweet_object['user']['name'] : undefined},
             
             {"id_str": tweet_object['id_str']} // meta
         )

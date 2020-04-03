@@ -1,0 +1,13 @@
+global:
+    platform_name: GGRM Messaging
+
+twitter:
+    consumer_key: 
+    consumer_secret: 
+    access_token_key: 
+    access_token_secret:
+    track: "#georgegshow"
+    use_name_as_nick: no
+    enable_replies: no
+
+  
