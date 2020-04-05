@@ -1,0 +1,16 @@
+{
+  "name": "platform.smsgateway",
+  "version": "1.0.0",
+  "description": "The smsgateway.me integration service for GGRM Messaging",
+  "main": "index.js",
+  "author": "Cameron Fleming <cameron@nevexo.space>",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mqtt": "^3.0.0",
+    "randomstring": "^1.1.5"
+  }
+}

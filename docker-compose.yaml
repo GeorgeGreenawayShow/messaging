@@ -85,7 +85,19 @@ services:
         build: ./platform.dummy
         env_file:
             - dev.env
-        ports:
+        # ports:
+        #     - "1234:1234"
+        networks:
+            - app-net
+
+    smsgateway:
+        container_name: platform.smsgateway
+        build: ./platform.smsgateway
+        depends_on: 
+            - config
+        env_file: 
+            - dev.env
+        ports: 
             - "1234:1234"
         networks:
             - app-net
